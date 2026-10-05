@@ -1,0 +1,1652 @@
+<!DOCTYPE html>
+<html lang="th" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Machinery & Automation Executive Dashboard & Design Brief</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            DEFAULT: '#0B2D5C',
+                            dark: '#061a38',
+                            light: '#143f7a'
+                        },
+                        techblue: {
+                            DEFAULT: '#1687E8',
+                            light: '#42a1f5',
+                            dark: '#0e62ab'
+                        },
+                        silver: {
+                            DEFAULT: '#A7B0BA',
+                            light: '#e2e7ec',
+                            dark: '#687380'
+                        },
+                        paper: {
+                            light: '#f3f6f9',
+                            dark: '#0a1424',
+                            cardLight: '#ffffff',
+                            cardDark: '#112239'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Sarabun', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js 4.4.1 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts: Sarabun & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Sarabun', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1687E8;
+            border-radius: 4px;
+        }
+        .glass-panel {
+            backdrop-filter: blur(8px);
+        }
+    </style>
+</head>
+<body class="bg-paper-light dark:bg-paper-dark text-slate-800 dark:text-slate-100 min-h-screen flex flex-col antialiased selection:bg-techblue selection:text-white">
+
+    <!-- STICKY HEADER BAR -->
+    <header class="sticky top-0 z-50 bg-navy text-white shadow-lg border-b border-navy-light/40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-3">
+                <!-- Brand Title -->
+                <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-techblue to-navy-light flex items-center justify-center text-white shadow-md shadow-techblue/30 border border-white/20">
+                            <i class="fa-solid fa-gears text-xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="font-bold text-lg leading-tight tracking-tight text-white flex items-center gap-2">
+                                Machinery & Automation System
+                                <span class="bg-techblue/30 text-techblue-light text-xs px-2 py-0.5 rounded-full border border-techblue/40 font-mono">v2.6</span>
+                            </h1>
+                            <p class="text-xs text-silver-light/80">อุตสาหกรรมเครื่องจักรและระบบอัตโนมัติ | Smart Factory Solutions</p>
+                        </div>
+                    </div>
+
+                    <!-- Dark Mode Toggle Mobile View Switch -->
+                    <div class="flex items-center gap-2 md:hidden">
+                        <button id="themeToggleMobile" onclick="toggleTheme()" class="p-2 rounded-lg bg-navy-light/60 text-silver hover:text-white transition-colors" title="สลับโหมดสว่าง/มืด">
+                            <i class="fa-solid fa-moon dark:hidden"></i>
+                            <i class="fa-solid fa-sun hidden dark:inline text-amber-400"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- View Switcher Tabs -->
+                <div class="flex items-center bg-navy-dark/70 p-1 rounded-xl border border-white/10 w-full md:w-auto justify-center">
+                    <button id="viewBtnDashboard" onclick="switchView('dashboard')" class="flex-1 md:flex-none px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 bg-techblue text-white shadow-sm flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-chart-line"></i> Executive Dashboard
+                    </button>
+                    <button id="viewBtnBrief" onclick="switchView('brief')" class="flex-1 md:flex-none px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 text-silver hover:text-white flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-file-contract"></i> Design Brief (งาน 1–5)
+                    </button>
+                </div>
+
+                <!-- Filters & Utilities Header Right -->
+                <div class="hidden md:flex items-center gap-3">
+                    <button id="themeToggleDesktop" onclick="toggleTheme()" class="p-2.5 rounded-xl bg-navy-light/60 hover:bg-navy-light text-silver hover:text-white transition-all border border-white/10 flex items-center gap-2 text-xs font-medium" title="สลับโหมดสว่าง/มืด">
+                        <i class="fa-solid fa-moon dark:hidden text-indigo-300"></i>
+                        <i class="fa-solid fa-sun hidden dark:inline text-amber-400"></i>
+                        <span class="dark:hidden">Dark Mode</span>
+                        <span class="hidden dark:inline">Light Mode</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Interactive Filter Bar (Sticky sub-bar) -->
+            <div id="filterContainer" class="mt-3 pt-3 border-t border-navy-light/30 flex flex-wrap items-center justify-between gap-3 text-xs">
+                <!-- Period Filter Chips -->
+                <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="text-silver text-xs font-semibold mr-1 flex items-center gap-1">
+                        <i class="fa-regular fa-calendar-check text-techblue"></i> ช่วงเวลา:
+                    </span>
+                    <button onclick="setPeriodFilter('FY')" id="chip-period-FY" class="filter-chip px-3 py-1 rounded-lg border font-medium transition-all bg-techblue border-techblue text-white shadow-sm">
+                        ทั้งปี (FY2026)
+                    </button>
+                    <button onclick="setPeriodFilter('Q1')" id="chip-period-Q1" class="filter-chip px-3 py-1 rounded-lg border font-medium transition-all border-navy-light/60 text-silver hover:text-white hover:bg-navy-light/50">
+                        Q1 (ต.ค.-ธ.ค.)
+                    </button>
+                    <button onclick="setPeriodFilter('Q2')" id="chip-period-Q2" class="filter-chip px-3 py-1 rounded-lg border font-medium transition-all border-navy-light/60 text-silver hover:text-white hover:bg-navy-light/50">
+                        Q2 (ม.ค.-มี.ค.)
+                    </button>
+                    <button onclick="setPeriodFilter('Q3')" id="chip-period-Q3" class="filter-chip px-3 py-1 rounded-lg border font-medium transition-all border-navy-light/60 text-silver hover:text-white hover:bg-navy-light/50">
+                        Q3 (เม.ย.-มิ.ย.)
+                    </button>
+                    <button onclick="setPeriodFilter('Q4')" id="chip-period-Q4" class="filter-chip px-3 py-1 rounded-lg border font-medium transition-all border-navy-light/60 text-silver hover:text-white hover:bg-navy-light/50">
+                        Q4 (ก.ค.-ส.ค.)
+                    </button>
+                </div>
+
+                <!-- Segment Filter Chips -->
+                <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="text-silver text-xs font-semibold mr-1 flex items-center gap-1">
+                        <i class="fa-solid fa-industry text-techblue"></i> กลุ่มอุตสาหกรรม:
+                    </span>
+                    <button onclick="setSegmentFilter('ALL')" id="chip-seg-ALL" class="filter-chip px-2.5 py-1 rounded-lg border font-medium transition-all bg-techblue border-techblue text-white shadow-sm">
+                        ทั้งหมด (ALL)
+                    </button>
+                    <button onclick="setSegmentFilter('AUTO')" id="chip-seg-AUTO" class="filter-chip px-2.5 py-1 rounded-lg border font-medium transition-all border-navy-light/60 text-silver hover:text-white hover:bg-navy-light/50">
+                        ชิ้นส่วนยานยนต์
+                    </button>
+                    <button onclick="setSegmentFilter('FOOD')" id="chip-seg-FOOD" class="filter-chip px-2.5 py-1 rounded-lg border font-medium transition-all border-navy-light/60 text-silver hover:text-white hover:bg-navy-light/50">
+                        อาหารและเครื่องดื่ม
+                    </button>
+                    <button onclick="setSegmentFilter('ELEC')" id="chip-seg-ELEC" class="filter-chip px-2.5 py-1 rounded-lg border font-medium transition-all border-navy-light/60 text-silver hover:text-white hover:bg-navy-light/50">
+                        อิเล็กทรอนิกส์
+                    </button>
+                    <button onclick="setSegmentFilter('LOGI')" id="chip-seg-LOGI" class="filter-chip px-2.5 py-1 rounded-lg border font-medium transition-all border-navy-light/60 text-silver hover:text-white hover:bg-navy-light/50">
+                        โลจิสติกส์ & คลังสินค้า
+                    </button>
+                    <button onclick="setSegmentFilter('PAPER')" id="chip-seg-PAPER" class="filter-chip px-2.5 py-1 rounded-lg border font-medium transition-all border-navy-light/60 text-silver hover:text-white hover:bg-navy-light/50">
+                        โรงงานกระดาษ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- ================= VIEW 1: EXECUTIVE DASHBOARD ================= -->
+        <div id="dashboardView" class="space-y-6 transition-all duration-300">
+            
+            <!-- Hero Decision Context Panel -->
+            <div class="bg-gradient-to-r from-navy via-navy-light to-techblue-dark text-white rounded-2xl p-6 shadow-xl border border-white/10 relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
+                    <i class="fa-solid fa-robot text-9xl text-white"></i>
+                </div>
+                <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div class="space-y-2">
+                        <div class="inline-flex items-center gap-2 bg-techblue/30 backdrop-blur-md px-3 py-1 rounded-full text-xs font-medium text-techblue-light border border-techblue/40">
+                            <i class="fa-solid fa-user-tie"></i> ผู้ใช้หลัก: CEO / ผู้อำนวยการฝ่ายวิศวกรรมและปฏิบัติการโรงงาน
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                            ระบบบริหารจัดการสายการผลิตและบริการบำรุงรักษาอัตโนมัติ 24 ชั่วโมง
+                        </h2>
+                        <p class="text-slate-200 text-sm max-w-3xl leading-relaxed">
+                            "เมื่อเวลาที่เครื่องจักรหยุดทำงาน ความเสียหายมีมูลค่ามหาศาล" – บริหารจัดการการติดตั้งระบบ Automation, การันตี Uptime SLA 99.5%, และขับเคลื่อนซอฟต์แวร์ AI IoT Predictive Maintenance สำหรับโรงงานอุตสาหกรรม
+                        </p>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/20 text-xs space-y-2 shrink-0 min-w-[240px]">
+                        <div class="flex justify-between items-center border-b border-white/10 pb-1.5">
+                            <span class="text-silver-light">การตัดสินใจสำคัญ:</span>
+                            <span class="font-bold text-amber-300">การจัดสรรงบ Project / SLA</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-silver-light">มุมมองตัวกรองปัจจุบัน:</span>
+                            <span id="activeFilterBadge" class="font-bold text-techblue-light"> FY2026 | ทุกกลุ่มอุตสาหกรรม</span>
+                        </div>
+                        <div class="flex justify-between items-center text-[11px] text-slate-300">
+                            <span>อัปเดตล่าสุด:</span>
+                            <span class="font-mono">5 ต.ค. 2026 (Real-time IoT)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5 MAIN KPI CARDS -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                
+                <!-- KPI 1: Total Revenue -->
+                <div class="bg-paper-cardLight dark:bg-paper-cardDark p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all">
+                    <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-1">
+                        <span class="font-semibold uppercase tracking-wider">รายได้รวม (Project & SLA)</span>
+                        <div class="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                            <i class="fa-solid fa-hand-holding-dollar"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-baseline gap-1">
+                        <span id="kpi-revenue" class="text-2xl font-bold text-navy dark:text-white">฿18.45M</span>
+                    </div>
+                    <div class="mt-2 flex items-center justify-between text-xs">
+                        <span class="text-slate-500 dark:text-slate-400">เป้าหมาย: <span class="font-mono font-medium">≥ ฿15.00M</span></span>
+                        <span id="kpi-revenue-status" class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300 flex items-center gap-1">
+                            <i class="fa-solid fa-arrow-trend-up"></i> +23.0%
+                        </span>
+                    </div>
+                </div>
+
+                <!-- KPI 2: Uptime SLA Rate -->
+                <div class="bg-paper-cardLight dark:bg-paper-cardDark p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all">
+                    <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-1">
+                        <span class="font-semibold uppercase tracking-wider">อุตสาหกรรม Uptime SLA</span>
+                        <div class="w-7 h-7 rounded-lg bg-techblue/10 text-techblue flex items-center justify-center">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-baseline gap-1">
+                        <span id="kpi-uptime" class="text-2xl font-bold text-navy dark:text-white">99.68%</span>
+                    </div>
+                    <div class="mt-2 flex items-center justify-between text-xs">
+                        <span class="text-slate-500 dark:text-slate-400">การันตี SLA: <span class="font-mono font-medium">≥ 99.50%</span></span>
+                        <span id="kpi-uptime-status" class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300 flex items-center gap-1">
+                            <i class="fa-solid fa-check"></i> บรรลุ SLA
+                        </span>
+                    </div>
+                </div>
+
+                <!-- KPI 3: Net Margin -->
+                <div class="bg-paper-cardLight dark:bg-paper-cardDark p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all">
+                    <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-1">
+                        <span class="font-semibold uppercase tracking-wider">กำไรสุทธิ (Net Margin)</span>
+                        <div class="w-7 h-7 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                            <i class="fa-solid fa-chart-pie"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-baseline gap-1">
+                        <span id="kpi-margin" class="text-2xl font-bold text-navy dark:text-white">22.4%</span>
+                    </div>
+                    <div class="mt-2 flex items-center justify-between text-xs">
+                        <span class="text-slate-500 dark:text-slate-400">เป้าหมาย: <span class="font-mono font-medium">≥ 20.0%</span></span>
+                        <span id="kpi-margin-status" class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300 flex items-center gap-1">
+                            <i class="fa-solid fa-circle-check"></i> สุขภาพดี
+                        </span>
+                    </div>
+                </div>
+
+                <!-- KPI 4: B2B CAC -->
+                <div class="bg-paper-cardLight dark:bg-paper-cardDark p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all">
+                    <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-1">
+                        <span class="font-semibold uppercase tracking-wider">ต้นทุนจัดหาลูกค้า (CAC)</span>
+                        <div class="w-7 h-7 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                            <i class="fa-solid fa-bullseye"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-baseline gap-1">
+                        <span id="kpi-cac" class="text-2xl font-bold text-navy dark:text-white">฿38,200</span>
+                    </div>
+                    <div class="mt-2 flex items-center justify-between text-xs">
+                        <span class="text-slate-500 dark:text-slate-400">เพดานสูงสุด: <span class="font-mono font-medium">≤ ฿45,000</span></span>
+                        <span id="kpi-cac-status" class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300 flex items-center gap-1">
+                            <i class="fa-solid fa-thumbs-up"></i> ประหยัด 15.1%
+                        </span>
+                    </div>
+                </div>
+
+                <!-- KPI 5: IoT & Predictive SLA Conversion -->
+                <div class="bg-paper-cardLight dark:bg-paper-cardDark p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all">
+                    <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-1">
+                        <span class="font-semibold uppercase tracking-wider">อัตราแปลง IoT & SLA</span>
+                        <div class="w-7 h-7 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+                            <i class="fa-solid fa-wifi"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-baseline gap-1">
+                        <span id="kpi-iot" class="text-2xl font-bold text-navy dark:text-white">88.2%</span>
+                    </div>
+                    <div class="mt-2 flex items-center justify-between text-xs">
+                        <span class="text-slate-500 dark:text-slate-400">เป้าแปลงสัญญา: <span class="font-mono font-medium">≥ 85.0%</span></span>
+                        <span id="kpi-iot-status" class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300 flex items-center gap-1">
+                            <i class="fa-solid fa-arrow-trend-up"></i> +3.2%
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- DYNAMIC ALERT PANEL -->
+            <div id="alertPanel" class="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 text-amber-900 dark:text-amber-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 shadow-sm">
+                <div class="flex items-start gap-3">
+                    <div class="p-2 bg-amber-500 text-white rounded-xl shrink-0 mt-0.5">
+                        <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+                    </div>
+                    <div class="space-y-0.5">
+                        <h4 class="font-bold text-sm flex items-center gap-2">
+                            ข้อความแจ้งเตือนตามเงื่อนไขทางธุรกิจ (Executive Alert Rule Evaluator)
+                            <span id="alertCountBadge" class="bg-amber-500 text-white text-[10px] px-2 py-0.2 rounded-full">1 การแจ้งเตือน</span>
+                        </h4>
+                        <p id="alertMessageText" class="text-xs text-amber-800 dark:text-amber-300">
+                            กลุ่มโรงงานกระดาษ (PAPER) ใน Q3 มีช่วงเวลา Downtime สะสมสูงขึ้นเนื่องจากปัญหาการกัดกร่อนของเซนเซอร์ PLC ขอแนะนำให้เร่งเสนอแพ็กเกจ Preventive Maintenance SLA เพิ่มเติม
+                        </p>
+                    </div>
+                </div>
+                <button onclick="dismissAlert()" class="px-3 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-900 dark:text-amber-100 rounded-lg text-xs font-semibold shrink-0 transition-colors">
+                    รับทราบข้อเสนอแนะ
+                </button>
+            </div>
+
+            <!-- 7 NARRATIVE STORY CHAPTERS (2-Column Grid / Alternating Visuals) -->
+            <div class="space-y-8">
+
+                <!-- CHAPTER 1: Problem & Value Proposition -->
+                <div class="bg-paper-cardLight dark:bg-paper-cardDark rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                    <div class="lg:col-span-5 space-y-4">
+                        <div class="flex items-center gap-2">
+                            <span class="px-2.5 py-1 bg-techblue/10 text-techblue rounded-md text-xs font-bold uppercase">Chapter 01</span>
+                            <span class="text-xs text-slate-400 font-mono">BMC: Value Proposition</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-navy dark:text-white">
+                            แก้โจทย์ใหญ่โรงงาน: ลด Downtime และ Human Error ด้วย Automation
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                            สายการผลิตที่ใช้แรงงานคนประสบปัญหาอัตราข้อผิดพลาด (Human Error) เฉลี่ย 4.8% และเกิดช่วงเวลาหยุดทำงานกะทันหัน (Unplanned Downtime) สูงถึง 142 ชั่วโมง/ปี สร้างความเสียหายเฉลี่ยล้านบาทต่อชั่วโมง การติดตั้งระบบอัตโนมัติ หุ่นยนต์ และ PLC สามารถลดความผิดพลาดลงเหลือเพียง <span class="font-bold text-techblue">0.12%</span> และลด Downtime ได้มากกว่า <span class="font-bold text-emerald-600 dark:text-emerald-400">82%</span>
+                        </p>
+                        <div class="flex flex-wrap gap-1.5 text-[11px]">
+                            <span class="bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">#ลดต้นทุนแรงงาน</span>
+                            <span class="bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">#เดินเครื่อง24ชั่วโมง</span>
+                            <span class="bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">#ความแม่นยำสูง</span>
+                        </div>
+                        <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border-l-4 border-techblue text-xs text-slate-700 dark:text-slate-300">
+                            <span class="font-bold text-navy dark:text-techblue-light">→ Actionable Step:</span> เสนอขายโซลูชันระบบ Automation ทดแทนจุดประกอบที่มีข้อผิดพลาดสูงสุดในสายการผลิตยานยนต์และอิเล็กทรอนิกส์
+                        </div>
+                    </div>
+                    <div class="lg:col-span-7 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-800 min-h-[280px]">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-xs font-bold text-navy dark:text-white uppercase tracking-wide">การเปรียบเทียบ Downtime & Human Error (แรงงานคน vs ระบบอัตโนมัติ)</h4>
+                            <span class="text-[10px] text-slate-400">หน่วย: ชั่วโมง downtime / % ความผิดพลาด</span>
+                        </div>
+                        <div class="h-60 relative">
+                            <canvas id="chart1_downtime"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CHAPTER 2: Customer Base Growth & SLA Engagement -->
+                <div class="bg-paper-cardLight dark:bg-paper-cardDark rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                    <div class="lg:col-span-7 order-2 lg:order-1 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-800 min-h-[280px]">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-xs font-bold text-navy dark:text-white uppercase tracking-wide">การเติบโตของ B2B Leads ใหม่ และ สัญญา SLA ที่เปิดใช้งาน active</h4>
+                            <span class="text-[10px] text-slate-400">สะสมรายไตรมาส</span>
+                        </div>
+                        <div class="h-60 relative">
+                            <canvas id="chart2_leads"></canvas>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-5 order-1 lg:order-2 space-y-4">
+                        <div class="flex items-center gap-2">
+                            <span class="px-2.5 py-1 bg-techblue/10 text-techblue rounded-md text-xs font-bold uppercase">Chapter 02</span>
+                            <span class="text-xs text-slate-400 font-mono">BMC: Customer Relationships & SLA</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-navy dark:text-white">
+                            การเปลี่ยนผ่านสู่ "ที่ปรึกษาทางวิศวกรรม" และสัญญา SLA
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                            เราไม่ได้หยุดแค่การขายเครื่องจักร (Project-based) แต่ผูกพันลูกค้าผ่านสัญญาบริการบำรุงรักษาประจำปี (Maintenance SLA) และซอฟต์แวร์ AI IoT Dashboard เพื่อดูแลสายการผลิตไม่ให้หยุดชะงัก เพิ่มสัดส่วน Recurring Income ขึ้นถึง <span class="font-bold text-techblue">38.5%</span> ของรายได้รวม
+                        </p>
+                        <div class="flex flex-wrap gap-1.5 text-[11px]">
+                            <span class="bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">#UptimeSLA</span>
+                            <span class="bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">#EngineeringConsultant</span>
+                            <span class="bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">#B2BTrust</span>
+                        </div>
+                        <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border-l-4 border-emerald-500 text-xs text-slate-700 dark:text-slate-300">
+                            <span class="font-bold text-emerald-700 dark:text-emerald-400">→ Actionable Step:</span> แปลงลูกค้าที่ส่งมอบโครงการครบ 6 เดือน เข้าสู่แพ็กเกจ Predictive SLA Pro โดยเสนอบันทึกส่วนลดค่าอะไหล่แท้ 10%
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CHAPTER 3: Marketing Channels & CAC Efficiency -->
+                <div class="bg-paper-cardLight dark:bg-paper-cardDark rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                    <div class="lg:col-span-5 space-y-4">
+                        <div class="flex items-center gap-2">
+                            <span class="px-2.5 py-1 bg-techblue/10 text-techblue rounded-md text-xs font-bold uppercase">Chapter 03</span>
+                            <span class="text-xs text-slate-400 font-mono">BMC: Channels & Marketing 4P</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-navy dark:text-white">
+                            เจาะตลาด B2B: วิศวกร ผู้จัดการโรงงาน และฝ่ายจัดซื้อ
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                            ช่องทางหลักอันดับหนึ่งคือ Direct Sales โดยทีมวิศวกรการขาย เข้าพบระดับผู้จัดการโรงงาน ร่วมกับการจัดสัมมนา Smart Factory Seminar และการแนะนำต่อ (Partner Referral) มีอัตราการปิดการขายสูงที่สุด โดยมีต้นทุน CAC เพียง <span class="font-bold text-techblue">฿38,200</span> ต่ำกว่าเพดานเป้าหมายที่ ฿45,000
+                        </p>
+                        <div class="flex flex-wrap gap-1.5 text-[11px]">
+                            <span class="bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">#DirectB2BSales</span>
+                            <span class="bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">#SmartFactorySeminar</span>
+                            <span class="bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">#LowCAC</span>
+                        </div>
+                        <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border-l-4 border-techblue text-xs text-slate-700 dark:text-slate-300">
+                            <span class="font-bold text-navy dark:text-techblue-light">→ Actionable Step:</span> เพิ่มงบจัดงาน Seminar Demonstration ในเขตอุตสาหกรรม EEC และอยุธยา เพื่อขยาย B2B Direct Sales Pipeline
+                        </div>
+                    </div>
+                    <div class="lg:col-span-7 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-800 min-h-[280px]">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-xs font-bold text-navy dark:text-white uppercase tracking-wide">ประสิทธิภาพช่องทาง B2B & ต้นทุนจัดหาลูกค้า (CAC)</h4>
+                            <span class="text-[10px] text-slate-400">เปรียบเทียบ 4 ช่องทางหลัก</span>
+                        </div>
+                        <div class="h-60 relative">
+                            <canvas id="chart3_channels"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="space-y-8">
+
+                <!-- CHAPTER 4: Customer Segments & Geographic Industrial Zones -->
+                <div class="bg-paper-cardLight dark:bg-paper-cardDark rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                    <div class="lg:col-span-7 order-2 lg:order-1 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-800 min-h-[280px]">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-xs font-bold text-navy dark:text-white uppercase tracking-wide">สัดส่วนสัญญารายได้แบ่งตามกลุ่มอุตสาหกรรม และ เขตนิคมอุตสาหกรรม</h4>
+                            <span class="text-[10px] text-slate-400">EEC, อยุธยา, ปทุมธานี</span>
+                        </div>
+                        <div class="h-60 relative">
+                            <canvas id="chart4_segments"></canvas>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-5 order-1 lg:order-2 space-y-4">
+                        <div class="flex items-center gap-2">
+                            <span class="px-2.5 py-1 bg-techblue/10 text-techblue rounded-md text-xs font-bold uppercase">Chapter 04</span>
+                            <span class="text-xs text-slate-400 font-mono">BMC: Customer Segments & Geography</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-navy dark:text-white">
+                            กลุ่มเป้าหมายหลัก: ชิ้นส่วนยานยนต์ อาหาร และนิคม EEC
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                            กลุ่มชิ้นส่วนยานยนต์ (AUTO) ครองสัดส่วนสูงสุด <span class="font-bold text-techblue">34%</span> ตามมาด้วยกลุ่มอาหารและเครื่องดื่ม (FOOD) <span class="font-bold text-emerald-600 dark:text-emerald-400">26%</span> โดยนิคมอุตสาหกรรมในพื้นที่ EEC (ชลบุรี-ระยอง) มีความต้องการติดตั้งระบบอัตโนมัติ หุ่นยนต์ และคลังสินค้าอัตโนมัติสูงสุด
+                        </p>
+                        <div class="flex flex-wrap gap-1.5 text-[11px]">
+                            <span class="bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">#AutomotiveParts</span>
+                            <span class="bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">#FoodAndBeverage</span>
+                            <span class="bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">#EECIndustrialZone</span>
+                        </div>
+                        <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border-l-4 border-indigo-500 text-xs text-slate-700 dark:text-slate-300">
+                            <span class="font-bold text-indigo-700 dark:text-indigo-400">→ Actionable Step:</span> ตั้งศูนย์บริการทางวิศวกรรมย่อย (Service Hub) ในระยอง เพื่อเร่ง Response Time งาน SLA ให้อยู่ใน 2 ชั่วโมง
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CHAPTER 5: 3 Revenue Streams & Target Benchmarks -->
+                <div class="bg-paper-cardLight dark:bg-paper-cardDark rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                    <div class="lg:col-span-5 space-y-4">
+                        <div class="flex items-center gap-2">
+                            <span class="px-2.5 py-1 bg-techblue/10 text-techblue rounded-md text-xs font-bold uppercase">Chapter 05</span>
+                            <span class="text-xs text-slate-400 font-mono">BMC: Revenue Streams</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-navy dark:text-white">
+                            3 สายธารรายได้: Project, SLA, และ IoT Software
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                            โครงสร้างรายได้ประกอบด้วย: 1) การขายติดตั้งเครื่องจักรแบบ Project-based (58.0%), 2) สัญญาบำรุงรักษาประจำปี Maintenance SLA (28.5%), และ 3) การอัปเกรดซอฟต์แวร์ IoT & AI Predictive Analytics (13.5%) ช่วยสร้างกระแสเงินสดที่สม่ำเสมอและมีความเสี่ยงต่ำ
+                        </p>
+                        <div class="flex flex-wrap gap-1.5 text-[11px]">
+                            <span class="bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">#ProjectBased</span>
+                            <span class="bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">#MaintenanceSLA</span>
+                            <span class="bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">#IoTSaftwareSaaS</span>
+                        </div>
+                        <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border-l-4 border-techblue text-xs text-slate-700 dark:text-slate-300">
+                            <span class="font-bold text-navy dark:text-techblue-light">→ Actionable Step:</span> บันเดิลสัญญาซอฟต์แวร์ AI Dashboard เข้ากับโครงการติดตั้งใหม่ทุกโครงการเพื่อเพิ่ม ARR (Annual Recurring Revenue)
+                        </div>
+                    </div>
+                    <div class="lg:col-span-7 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-800 min-h-[280px]">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-xs font-bold text-navy dark:text-white uppercase tracking-wide">สัดส่วนรายได้ 3 สายธาร เปรียบเทียบกับเส้นเป้าหมายรายไตรมาส</h4>
+                            <span class="text-[10px] text-slate-400">หน่วย: ล้านบาท (THB)</span>
+                        </div>
+                        <div class="h-60 relative">
+                            <canvas id="chart5_revenue"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CHAPTER 6: Production Quality & 4M Analysis (Machine Uptime) -->
+                <div class="bg-paper-cardLight dark:bg-paper-cardDark rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                    <div class="lg:col-span-7 order-2 lg:order-1 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-800 min-h-[280px]">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-xs font-bold text-navy dark:text-white uppercase tracking-wide">4M Analysis: Machine Uptime, SCADA Response & Downtime Causes</h4>
+                            <span class="text-[10px] text-slate-400">อัตราเวลาเดินเครื่อง / มิลลิวินาที</span>
+                        </div>
+                        <div class="h-60 relative">
+                            <canvas id="chart6_quality"></canvas>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-5 order-1 lg:order-2 space-y-4">
+                        <div class="flex items-center gap-2">
+                            <span class="px-2.5 py-1 bg-techblue/10 text-techblue rounded-md text-xs font-bold uppercase">Chapter 06</span>
+                            <span class="text-xs text-slate-400 font-mono">Analysis: 4M Framework</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-navy dark:text-white">
+                            การวิเคราะห์ 4M: Man, Machine, Material, Method
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                            จากวิเคราะห์ 4M พบว่า **Machine** (การขัดข้องของ PLC/Sensor) และ **Material** (ชิ้นส่วนไม่ได้มาตรฐาน) เป็นสาเหตุหลักของ Downtime ยุคใหม่ การใช้โปรแกรม SCADA/AI ติดตามความสั่นสะเทือนและความร้อน ช่วยสกัดปัญหาก่อนเครื่องจักรขัดข้องจริง
+                        </p>
+                        <div class="flex flex-wrap gap-1.5 text-[11px]">
+                            <span class="bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">#4MAnalysis</span>
+                            <span class="bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">#PreventiveMaintenance</span>
+                            <span class="bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">#SCADASensors</span>
+                        </div>
+                        <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border-l-4 border-amber-500 text-xs text-slate-700 dark:text-slate-300">
+                            <span class="font-bold text-amber-700 dark:text-amber-400">→ Actionable Step:</span> อัปเกรดเซนเซอร์ความร้อนและแรงสั่นสะเทือนเกรดอุตสาหกรรม ป้องกันเซนเซอร์เสื่อมสภาพในสภาวะความร้อนสูง
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CHAPTER 7: Cost Structure, Profitability & Cumulative Profit -->
+                <div class="bg-paper-cardLight dark:bg-paper-cardDark rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                    <div class="lg:col-span-5 space-y-4">
+                        <div class="flex items-center gap-2">
+                            <span class="px-2.5 py-1 bg-techblue/10 text-techblue rounded-md text-xs font-bold uppercase">Chapter 07</span>
+                            <span class="text-xs text-slate-400 font-mono">BMC: Cost Structure & Profitability</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-navy dark:text-white">
+                            จุดคุ้มทุนและกำไรสุทธิสะสม (Financial Performance)
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                            โครงสร้างต้นทุนหลักประกอบด้วย: 1) อุปกรณ์อัตโนมัติ หุ่นยนต์ และเซนเซอร์ (42%), 2) เงินเดือนทีมวิศวกรและโปรแกรมเมอร์ PLC/AI (33%), 3) R&D และการบำรุงรักษาโรงงาน (15%), และ 4) ค่าการตลาด B2B (10%) มีอัตรากำไรสุทธิเฉลี่ย <span class="font-bold text-emerald-600 dark:text-emerald-400">22.4%</span>
+                        </p>
+                        <div class="flex flex-wrap gap-1.5 text-[11px]">
+                            <span class="bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">#CostStructure</span>
+                            <span class="bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">#EngineeringTeam</span>
+                            <span class="bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">#NetMargin22%</span>
+                        </div>
+                        <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border-l-4 border-emerald-500 text-xs text-slate-700 dark:text-slate-300">
+                            <span class="font-bold text-emerald-700 dark:text-emerald-400">→ Actionable Step:</span> ทำสัญญาจัดซื้ออุปกรณ์ PLC/Sensors ล็อตใหญ่รายปี (Volume Discount) เพื่อลดต้นทุน Material ลง 5%
+                        </div>
+                    </div>
+                    <div class="lg:col-span-7 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-800 min-h-[280px]">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-xs font-bold text-navy dark:text-white uppercase tracking-wide">รายได้vsต้นทุน และ กระแสเงินสดสะสม (Cumulative Cashflow)</h4>
+                            <span class="text-[10px] text-slate-400">หน่วย: ล้านบาท</span>
+                        </div>
+                        <div class="h-60 relative">
+                            <canvas id="chart7_financial"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- DATA ROOM (DRILL-DOWN TABLE WITH TABS) -->
+            <div class="bg-paper-cardLight dark:bg-paper-cardDark rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-navy dark:text-white flex items-center gap-2">
+                            <i class="fa-solid fa-database text-techblue"></i>
+                            Data Room & Detailed Operations Table
+                        </h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">เจาะลึกข้อมูลโครงการ สัญญา SLA ลูกค้า B2B ต้นทุน 4M และ SWOT Analysis</p>
+                    </div>
+
+                    <!-- Data Room Tabs Switcher -->
+                    <div class="flex flex-wrap items-center gap-1 bg-slate-100 dark:bg-slate-900 p-1 rounded-xl text-xs font-medium border border-slate-200 dark:border-slate-800">
+                        <button onclick="switchDataTab('projects')" id="dataTab-projects" class="px-3 py-1.5 rounded-lg bg-navy text-white shadow-sm transition-all">
+                            โครงการติดตั้ง
+                        </button>
+                        <button onclick="switchDataTab('sla_contracts')" id="dataTab-sla_contracts" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all">
+                            สัญญา SLA
+                        </button>
+                        <button onclick="switchDataTab('b2b_leads')" id="dataTab-b2b_leads" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all">
+                            ลูกค้า B2B
+                        </button>
+                        <button onclick="switchDataTab('cost_4m')" id="dataTab-cost_4m" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all">
+                            ต้นทุน 4M
+                        </button>
+                        <button onclick="switchDataTab('swot_analysis')" id="dataTab-swot_analysis" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all">
+                            SWOT Analysis
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Table Content Container -->
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-xs text-left text-slate-600 dark:text-slate-300">
+                        <thead id="dataRoomThead" class="text-[11px] uppercase bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 border-b border-slate-200 dark:border-slate-700 font-bold">
+                            <!-- Injected by JavaScript -->
+                        </thead>
+                        <tbody id="dataRoomTbody" class="divide-y divide-slate-200 dark:divide-slate-800 font-normal">
+                            <!-- Injected by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- STUDENT & TEAM INFO FOOTER SECTION -->
+            <div class="bg-navy text-white rounded-2xl p-6 shadow-md border border-navy-light/40 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-techblue/20 border border-techblue/40 flex items-center justify-center text-techblue-light text-xl font-bold">
+                        <i class="fa-solid fa-id-card"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-silver-light">เจ้าของโครงการ / ผู้จัดทำแดชบอร์ด:</div>
+                        <h4 class="text-base font-bold text-white">นายธนกร แก้วศรสีด (รหัสนักศึกษา 67160217)</h4>
+                        <p class="text-xs text-slate-300">สาขาวิชาวิศวกรรมและระบบบริหารจัดการ | อุตสาหกรรมเครื่องจักรและระบบอัตโนมัติ</p>
+                    </div>
+                </div>
+                <div class="text-right text-xs text-slate-300 space-y-1">
+                    <div><span class="text-silver-light">ระบบควบคุม:</span> PLC, SCADA, Industrial IoT & AI Robotics</div>
+                    <div><span class="text-silver-light">หลักสูตร:</span> Business Model Canvas & Systems Engineering Framework</div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- ================= VIEW 2: DESIGN BRIEF (DELIVERABLES 1–5) ================= -->
+        <div id="briefView" class="hidden space-y-8 transition-all duration-300">
+            
+            <!-- Brief Header -->
+            <div class="bg-gradient-to-r from-navy via-navy-light to-techblue text-white p-6 rounded-2xl shadow-lg border border-white/10">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="bg-white/20 px-3 py-1 rounded-full text-xs font-semibold tracking-wide">Design Brief Document</span>
+                    <span class="text-xs text-silver-light font-mono">Deliverables 1–5</span>
+                </div>
+                <h2 class="text-2xl font-bold">เอกสารสรุปข้อกำหนดการออกแบบ Executive Dashboard</h2>
+                <p class="text-xs sm:text-sm text-slate-200 mt-1">
+                    โครงการออกแบบระบบบริหารจัดการอุตสาหกรรมเครื่องจักรและระบบอัตโนมัติ (Machinery & Automation System) – นายธนกร แก้วศรสีด (67160217)
+                </p>
+            </div>
+
+            <!-- DELIVERABLE 1: DASHBOARD BRIEF CANVAS & BUS MATRIX -->
+            <div class="bg-paper-cardLight dark:bg-paper-cardDark p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+                <div class="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
+                    <div class="w-8 h-8 rounded-lg bg-techblue/10 text-techblue flex items-center justify-center font-bold">1</div>
+                    <div>
+                        <h3 class="font-bold text-base text-navy dark:text-white">Deliverable 1: Dashboard Brief Canvas & Data Warehouse Bus Matrix</h3>
+                        <p class="text-xs text-slate-500">กำหนดเป้าหมาย ผู้ใช้งาน คำถามทางธุรกิจ Dimensions & Metrics</p>
+                    </div>
+                </div>
+
+                <!-- Brief Canvas Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                    <div class="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800 space-y-2">
+                        <span class="font-bold text-navy dark:text-techblue-light uppercase tracking-wider block border-b pb-1 border-slate-200 dark:border-slate-800">1. Target User & Decision Context</span>
+                        <p><strong>ผู้ใช้หลัก:</strong> CEO, ผู้อำนวยการฝ่ายวิศวกรรม, ผู้จัดการฝ่ายปฏิบัติการโรงงาน</p>
+                        <p><strong>การตัดสินใจ:</strong> การจัดสรรงบประมาณโครงการติดตั้งระบบอัตโนมัติ, การปรับราคาประกันสัญญา Uptime SLA, และการลงนามจัดซื้อ AI IoT Predictive Maintenance</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800 space-y-2">
+                        <span class="font-bold text-navy dark:text-techblue-light uppercase tracking-wider block border-b pb-1 border-slate-200 dark:border-slate-800">2. Key Metrics & Grain</span>
+                        <p><strong>Metrics:</strong> Revenue (THB), Machine Uptime (%), Net Margin (%), B2B CAC (THB), SLA Conversion (%)</p>
+                        <p><strong>Grain:</strong> รายโครงการ (Project level), รายสัญญา SLA (Contract level), และรายวัน (Real-time Sensor IoT level)</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800 space-y-2">
+                        <span class="font-bold text-navy dark:text-techblue-light uppercase tracking-wider block border-b pb-1 border-slate-200 dark:border-slate-800">3. Actionable Dimensions</span>
+                        <p><strong>Dimensions:</strong> ช่วงเวลา (Quarter, Month), กลุ่มอุตสาหกรรม (AUTO, FOOD, ELEC, LOGI, PAPER), พื้นที่นิคมอุตสาหกรรม (EEC, Ayutthaya, Pathum Thani), และช่องทางการขาย</p>
+                    </div>
+                </div>
+
+                <!-- Data Warehouse Bus Matrix Table -->
+                <div class="space-y-2">
+                    <h4 class="text-xs font-bold text-navy dark:text-white uppercase tracking-wider">Data Warehouse Bus Matrix (Business Processes vs Conformed Dimensions)</h4>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs border border-slate-200 dark:border-slate-800 text-center">
+                            <thead class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold">
+                                <tr>
+                                    <th class="p-2 text-left border">Business Process</th>
+                                    <th class="p-2 border">Dim Date</th>
+                                    <th class="p-2 border">Dim Customer Segment</th>
+                                    <th class="p-2 border">Dim Geography / Estate</th>
+                                    <th class="p-2 border">Dim Machine Equipment</th>
+                                    <th class="p-2 border">Dim Marketing Channel</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+                                <tr>
+                                    <td class="p-2 text-left font-semibold">1. Project Machinery Installation</td>
+                                    <td class="p-2 text-emerald-600 font-bold">✓</td>
+                                    <td class="p-2 text-emerald-600 font-bold">✓</td>
+                                    <td class="p-2 text-emerald-600 font-bold">✓</td>
+                                    <td class="p-2 text-emerald-600 font-bold">✓</td>
+                                    <td class="p-2 text-emerald-600 font-bold">✓</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 text-left font-semibold">2. Maintenance SLA & Uptime Monitoring</td>
+                                    <td class="p-2 text-emerald-600 font-bold">✓</td>
+                                    <td class="p-2 text-emerald-600 font-bold">✓</td>
+                                    <td class="p-2 text-emerald-600 font-bold">✓</td>
+                                    <td class="p-2 text-emerald-600 font-bold">✓</td>
+                                    <td class="p-2 text-slate-300">-</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 text-left font-semibold">3. B2B Lead Acquisition & CAC</td>
+                                    <td class="p-2 text-emerald-600 font-bold">✓</td>
+                                    <td class="p-2 text-emerald-600 font-bold">✓</td>
+                                    <td class="p-2 text-emerald-600 font-bold">✓</td>
+                                    <td class="p-2 text-slate-300">-</td>
+                                    <td class="p-2 text-emerald-600 font-bold">✓</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 text-left font-semibold">4. 4M Cost & Financial P&L</td>
+                                    <td class="p-2 text-emerald-600 font-bold">✓</td>
+                                    <td class="p-2 text-emerald-600 font-bold">✓</td>
+                                    <td class="p-2 text-slate-300">-</td>
+                                    <td class="p-2 text-emerald-600 font-bold">✓</td>
+                                    <td class="p-2 text-slate-300">-</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DELIVERABLE 2: KPI DEFINITION TABLE -->
+            <div class="bg-paper-cardLight dark:bg-paper-cardDark p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                <div class="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
+                    <div class="w-8 h-8 rounded-lg bg-techblue/10 text-techblue flex items-center justify-center font-bold">2</div>
+                    <div>
+                        <h3 class="font-bold text-base text-navy dark:text-white">Deliverable 2: KPI Definition Matrix Table (10 Core Specification Attributes)</h3>
+                        <p class="text-xs text-slate-500">รายละเอียดสูตรคำนวณ ระดับ Granularity เป้าหมาย เงื่อนไขการเตือน และผู้รับผิดชอบ</p>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-left border border-slate-200 dark:border-slate-800">
+                        <thead class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold">
+                            <tr>
+                                <th class="p-2 border">KPI Name</th>
+                                <th class="p-2 border">Business Definition</th>
+                                <th class="p-2 border">Formula</th>
+                                <th class="p-2 border">Grain</th>
+                                <th class="p-2 border">Data Source</th>
+                                <th class="p-2 border">Target</th>
+                                <th class="p-2 border">Alert Threshold</th>
+                                <th class="p-2 border">Latest Value</th>
+                                <th class="p-2 border">Owner</th>
+                                <th class="p-2 border">Action Plan</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+                            <tr>
+                                <td class="p-2 font-bold border">1. Total Revenue</td>
+                                <td class="p-2 border">รายได้รวมจากการขายเครื่องจักร ติดตั้งระบบ และสัญญา SLA</td>
+                                <td class="p-2 border font-mono">SUM(Project_Rev + SLA_Rev + Software_Rev)</td>
+                                <td class="p-2 border">รายเดือน / รายไตรมาส</td>
+                                <td class="p-2 border">ERP & Billing System</td>
+                                <td class="p-2 border font-semibold text-emerald-600">≥ ฿15.00M</td>
+                                <td class="p-2 border text-red-500">&lt; ฿12.00M</td>
+                                <td class="p-2 border font-mono">฿18.45M</td>
+                                <td class="p-2 border">Chief Financial Officer (CFO)</td>
+                                <td class="p-2 border">เร่งปิดดีลโปรเจกต์ขนาดใหญ่ในกลุ่มยานยนต์</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 font-bold border">2. Uptime SLA Rate</td>
+                                <td class="p-2 border">เปอร์เซ็นต์เวลาเดินเครื่องจักรย่อยในโรงงานลูกค้าโดยไม่หยุดชะงัก</td>
+                                <td class="p-2 border font-mono">(Total Hours - Downtime Hours) / Total Hours * 100</td>
+                                <td class="p-2 border">รายชั่วโมง / IoT Telemetry</td>
+                                <td class="p-2 border">SCADA & PLC Edge IoT</td>
+                                <td class="p-2 border font-semibold text-emerald-600">≥ 99.50%</td>
+                                <td class="p-2 border text-red-500">&lt; 99.00%</td>
+                                <td class="p-2 border font-mono">99.68%</td>
+                                <td class="p-2 border">Head of Engineering Service</td>
+                                <td class="p-2 border">ส่งทีม Mobile Fast Response เข้าตรวจทันที</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 font-bold border">3. Net Margin %</td>
+                                <td class="p-2 border">อัตรากำไรสุทธิหลังหักต้นทุนอุปกรณ์ ค่าแรง และค่าการตลาด</td>
+                                <td class="p-2 border font-mono">(Net Profit / Total Revenue) * 100</td>
+                                <td class="p-2 border">รายไตรมาส</td>
+                                <td class="p-2 border">Accounting System</td>
+                                <td class="p-2 border font-semibold text-emerald-600">≥ 20.0%</td>
+                                <td class="p-2 border text-red-500">&lt; 15.0%</td>
+                                <td class="p-2 border font-mono">22.4%</td>
+                                <td class="p-2 border">Managing Director</td>
+                                <td class="p-2 border">เจรจา Volume Discount อุปกรณ์ PLC/Sensors</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 font-bold border">4. B2B CAC</td>
+                                <td class="p-2 border">ต้นทุนในการได้มาซึ่งลูกค้าโรงงาน B2B ใหม่ 1 ราย</td>
+                                <td class="p-2 border font-mono">Total B2B Marketing & Sales Cost / New Clients</td>
+                                <td class="p-2 border">รายไตรมาส</td>
+                                <td class="p-2 border">CRM & Marketing ERP</td>
+                                <td class="p-2 border font-semibold text-emerald-600">≤ ฿45,000</td>
+                                <td class="p-2 border text-red-500">&gt; ฿55,000</td>
+                                <td class="p-2 border font-mono">฿38,200</td>
+                                <td class="p-2 border">Head of B2B Marketing</td>
+                                <td class="p-2 border">เน้นสัมมนาเชิงเทคนิคและการบอกต่อ Referral</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 font-bold border">5. IoT SLA Conversion</td>
+                                <td class="p-2 border">สัดส่วนลูกค้าที่เปลี่ยนจากการซื้อเครื่องจักรไปเป็นสัญญา SLA</td>
+                                <td class="p-2 border font-mono">(Active SLA Clients / Total Installed Clients) * 100</td>
+                                <td class="p-2 border">รายไตรมาส</td>
+                                <td class="p-2 border">CRM Contracts</td>
+                                <td class="p-2 border font-semibold text-emerald-600">≥ 85.0%</td>
+                                <td class="p-2 border text-red-500">&lt; 75.0%</td>
+                                <td class="p-2 border font-mono">88.2%</td>
+                                <td class="p-2 border">Customer Success Lead</td>
+                                <td class="p-2 border">เสนอแพ็กเกจทดลองใช้งาน AI Dashboard ฟรี 3 เดือน</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- DELIVERABLE 3: DASHBOARD WIREFRAME -->
+            <div class="bg-paper-cardLight dark:bg-paper-cardDark p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                <div class="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
+                    <div class="w-8 h-8 rounded-lg bg-techblue/10 text-techblue flex items-center justify-center font-bold">3</div>
+                    <div>
+                        <h3 class="font-bold text-base text-navy dark:text-white">Deliverable 3: Dashboard Wireframe Design & Component Layout</h3>
+                        <p class="text-xs text-slate-500">พิมพ์เขียวเลย์เอาต์ระบบแดชบอร์ด 1 หน้ากระดาษ (Executive Single-Page Structure)</p>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-slate-900 text-slate-200 rounded-xl font-mono text-[11px] leading-relaxed overflow-x-auto">
+<pre>
++-------------------------------------------------------------------------------------------------------------------------+
+| [STICKY HEADER BAR] Machinery & Automation System | View Switcher: [Dashboard] [Design Brief] | Theme: [Dark/Light]      |
+| Interactive Filters: [FY2026 | Q1 | Q2 | Q3 | Q4]   Segment: [ALL | AUTO | FOOD | ELEC | LOGI | PAPER]                        |
++-------------------------------------------------------------------------------------------------------------------------+
+| [HERO DECISION CONTEXT PANEL] Target User: CEO / Chief Operations Officer                                                 |
+| "เมื่อเวลาที่เครื่องหยุดทำงาน ความเสียหายมูลค่ามหาศาล" - Monitoring Uptime, Revenue Streams & SLA Contracts                       |
++-------------------------------------------------------------------------------------------------------------------------+
+| [5 MAIN KPI CARDS]                                                                                                      |
+| +-------------------+ +-------------------+ +-------------------+ +-------------------+ +-------------------+             |
+| | Total Revenue     | | Uptime SLA Rate   | | Net Margin        | | B2B CAC           | | IoT Conversion    |             |
+| | ฿18.45M (≥15.0M)  | | 99.68% (≥99.5%)   | | 22.4% (≥20.0%)    | | ฿38,200 (≤45k)    | | 88.2% (≥85.0%)    |             |
+| +-------------------+ +-------------------+ +-------------------+ +-------------------+ +-------------------+             |
++-------------------------------------------------------------------------------------------------------------------------+
+| [DYNAMIC EXECUTIVE ALERT PANEL] Threshold Evaluation Output Message                                                      |
++-------------------------------------------------------------------------------------------------------------------------+
+| [7 NARRATIVE STORY CHAPTERS - Alternating Visual Layout]                                                                |
+| - Chapter 1: Problem & Value (Downtime vs Automation Error)      [Chart 1: Grouped Bar - Downtime vs Error Rate]         |
+| - Chapter 2: Customer Base & SLA Engagement                     [Chart 2: Combo Bar/Line - Leads vs Active SLA]          |
+| - Chapter 3: Marketing Channels & CAC Efficiency                [Chart 3: Horizontal Bar - CAC by Channel]                |
+| - Chapter 4: Customer Segments & Industrial Zones               [Chart 4: Horizontal Bar - Segment & Zone Distribution]   |
+| - Chapter 5: 3 Revenue Streams & Target Benchmarks              [Chart 5: Stacked Bar - Revenue Streams vs Target]        |
+| - Chapter 6: Production Quality & 4M Analysis                   [Chart 6: Dual Line - Machine Uptime vs SCADA Latency]   |
+| - Chapter 7: Financial Cost Structure & Net Margin              [Chart 7: Combo - P&L vs Cumulative Cashflow]            |
++-------------------------------------------------------------------------------------------------------------------------+
+| [DATA ROOM & OPERATIONAL DRILL-DOWN TABLE] Tabs: [Projects] [SLA Contracts] [B2B Leads] [4M Cost] [SWOT Analysis]       |
++-------------------------------------------------------------------------------------------------------------------------+
+| [STUDENT FOOTER] นายธนกร แก้วศรสีด (67160217) | Business Model Canvas & Systems Engineering Framework                      |
++-------------------------------------------------------------------------------------------------------------------------+
+</pre>
+                </div>
+            </div>
+
+            <!-- DELIVERABLE 4: CHART SELECTION RATIONALES -->
+            <div class="bg-paper-cardLight dark:bg-paper-cardDark p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                <div class="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
+                    <div class="w-8 h-8 rounded-lg bg-techblue/10 text-techblue flex items-center justify-center font-bold">4</div>
+                    <div>
+                        <h3 class="font-bold text-base text-navy dark:text-white">Deliverable 4: Chart Selection Rationales (13 Visual Components)</h3>
+                        <p class="text-xs text-slate-500">เหตุผลทางวิชาการและ UX/UI ในการเลือกรูปแบบกราฟให้เหมาะกับบริบทการตัดสินใจ</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                    <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <span class="font-bold text-techblue">1. KPI Summary Cards (5 Cards):</span> ช่วยให้ผู้บริหารระดับสูงประเมินสถานะภาพรวม (Health Check) ได้ใน 3 วินาทีแรก
+                    </div>
+                    <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <span class="font-bold text-techblue">2. Grouped Bar Chart (Chapter 1):</span> เปรียบเทียบสองตัวแปรต่างหน่วย (Downtime และ Human Error) ระหว่างระบบเดิมกับระบบอัตโนมัติได้อย่างชัดเจน
+                    </div>
+                    <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <span class="font-bold text-techblue">3. Combo Bar & Line Chart (Chapter 2):</span> แสดงปริมาณ Leads ใหม่ (Bar) ควบคู่กับอัตราเติบโตสะสมของสัญญา SLA (Line) ในกราฟเดียว
+                    </div>
+                    <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <span class="font-bold text-techblue">4. Horizontal Bar Chart with Benchmark (Chapter 3):</span> ช่วยให้เปรียบเทียบ CAC ของแต่ละช่องทางขายเทียบกับเส้นเพดานงบประมาณได้อย่างสบายตา
+                    </div>
+                    <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <span class="font-bold text-techblue">5. Segment Distribution Chart (Chapter 4):</span> แสดงสัดส่วนรายได้ตามกลุ่มอุตสาหกรรม (Automotive, Food, Elec) และโซนพื้นที่นิคม
+                    </div>
+                    <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <span class="font-bold text-techblue">6. Stacked Bar Chart (Chapter 5):</span> สะท้อนการสะสมรายได้จาก 3 สายธาร (Project, SLA, Software) เทียบกับเส้นเป้าหมาย Target Line
+                    </div>
+                    <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <span class="font-bold text-techblue">7. Dual-Axis Trend Line (Chapter 6):</span> ติดตามแนวโน้ม Machine Uptime (%) และ SCADA Latency (ms) แบบ Real-time
+                    </div>
+                    <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <span class="font-bold text-techblue">8. Financial Combo Chart (Chapter 7):</span> แสดง Revenue vs Cost (Bars) พร้อมกระแสเงินสดสะสม Cumulative Profit Line
+                    </div>
+                    <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <span class="font-bold text-techblue">9. Dynamic Alert Banner:</span> ใช้สี Amber/Red ดึงดูดสายตาทันทีที่มีค่า KPI ต่ำกว่าเกณฑ์มาตรฐาน
+                    </div>
+                    <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <span class="font-bold text-techblue">10. Interactive Filter Chips:</span> ช่วยให้ผู้บริหารเลือกเจาะลึกเฉพาะกลุ่มอุตสาหกรรมหรือไตรมาสได้รวดเร็วแบบ Click-and-View
+                    </div>
+                    <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <span class="font-bold text-techblue">11. Data Room Drill-down Tables:</span> แสดงรายละเอียดระดับ Transaction เมื่อผู้ใช้ต้องการตรวจสอบสัญญาหรือรายละเอียดรายโครงการ
+                    </div>
+                    <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <span class="font-bold text-techblue">12. SWOT & 4M Embedded Card:</span> รวมการวิเคราะห์ SWOT อุตสาหกรรมและ SWOT ส่วนบุคคล (เลี่ยงการใช้ AI ทำงานทุกครั้งเพื่อพัฒนาความรู้)
+                    </div>
+                    <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800 font-semibold text-slate-700 dark:text-slate-300">
+                        <span class="font-bold text-techblue">13. Dark/Light Theme Switching:</span> เพิ่มความสบายตาในการใช้งานในห้องควบคุมการผลิต (Control Room) ตลอด 24 ชั่วโมง
+                    </div>
+                </div>
+            </div>
+
+            <!-- DELIVERABLE 5: FILTER & ALERT RULES MATRIX TABLE -->
+            <div class="bg-paper-cardLight dark:bg-paper-cardDark p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                <div class="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
+                    <div class="w-8 h-8 rounded-lg bg-techblue/10 text-techblue flex items-center justify-center font-bold">5</div>
+                    <div>
+                        <h3 class="font-bold text-base text-navy dark:text-white">Deliverable 5: Filter & Alert Rules Matrix Table</h3>
+                        <p class="text-xs text-slate-500">ตารางตรรกะการทำงานของการกรองข้อมูลและกฎการแจ้งเตือนอัตโนมัติ</p>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-left border border-slate-200 dark:border-slate-800">
+                        <thead class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold">
+                            <tr>
+                                <th class="p-2 border">Rule ID</th>
+                                <th class="p-2 border">Trigger Condition (ตรรกะ)</th>
+                                <th class="p-2 border">Affected Visual Components</th>
+                                <th class="p-2 border">Severity Level</th>
+                                <th class="p-2 border">System Alert Message</th>
+                                <th class="p-2 border">Prescribed Executive Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+                            <tr>
+                                <td class="p-2 font-mono font-bold border">RULE-01</td>
+                                <td class="p-2 border">Uptime SLA &lt; 99.50% ใน Segment เลือก</td>
+                                <td class="p-2 border">KPI Card 2, Chart 6, Data Room</td>
+                                <td class="p-2 border text-red-600 font-bold bg-red-50 dark:bg-red-950/30">HIGH (CRITICAL)</td>
+                                <td class="p-2 border">ระดับ Uptime ของกลุ่มนี้ต่ำกว่าเกณฑ์ SLA การันตี 99.5% อาจเสี่ยงโดนปรับตามสัญญา</td>
+                                <td class="p-2 border">ส่งทีมวิศวกรด่วนเพื่อเปลี่ยนเซนเซอร์ PLC และปรับจูนโปรแกรม SCADA</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 font-mono font-bold border">RULE-02</td>
+                                <td class="p-2 border">CAC &gt; ฿45,000 ในไตรมาสที่เลือก</td>
+                                <td class="p-2 border">KPI Card 4, Chart 3</td>
+                                <td class="p-2 border text-amber-600 font-bold bg-amber-50 dark:bg-amber-950/30">MEDIUM (WARNING)</td>
+                                <td class="p-2 border">ต้นทุนการหาลูกค้า B2B สูงเกินงบประมาณที่ตั้งไว้จากการลงโฆษณาออนไลน์ที่ไม่ตรงกลุ่ม</td>
+                                <td class="p-2 border">โยกงบประมาณการตลาด B2B ไปจัดงาน Smart Factory Seminar แบบจำเพาะเจาะจง</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 font-mono font-bold border">RULE-03</td>
+                                <td class="p-2 border">Margin &lt; 20.0% หรือ Paper Segment selected</td>
+                                <td class="p-2 border">KPI Card 3, Chart 7, Data Room</td>
+                                <td class="p-2 border text-amber-600 font-bold bg-amber-50 dark:bg-amber-950/30">MEDIUM (WARNING)</td>
+                                <td class="p-2 border">กลุ่มโรงงานกระดาษมีต้นทุนค่าบำรุงรักษาอะไหล่สูง ทำให้ Net Margin ลดลงเหลือ 18.5%</td>
+                                <td class="p-2 border">เสนอขายแพ็กเกจ IoT Predictive Maintenance เพื่อป้องกันอะไหล่เสียหายล่วงหน้า</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- REVIEW QUESTIONS / SELF-CHECK QA SECTION -->
+            <div class="bg-paper-cardLight dark:bg-paper-cardDark p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                <h3 class="font-bold text-base text-navy dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-clipboard-check text-techblue"></i>
+                    Review Questions & Self-Check QA Section
+                </h3>
+                <div class="space-y-3 text-xs leading-relaxed text-slate-700 dark:text-slate-300">
+                    <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800 space-y-1">
+                        <span class="font-bold text-navy dark:text-techblue-light block">Q1: แดชบอร์ดนี้ช่วยแก้โจทย์ของ CEO และผู้อำนวยการวิศวกรรมอย่างไร?</span>
+                        <p>ตอบ: ช่วยให้มองเห็นทั้งสภาวะรายได้จากโครงการ ความคุ้มค่าของสัญญา SLA และประสิทธิภาพ Uptime ของเครื่องจักรในโรงงานลูกค้าได้จากหน้าจอเดียว โดยมีระบบ Alert เตือนเมื่อ Uptime หรือ Net Margin ตกต่ำกว่าเป้าหมาย</p>
+                    </div>
+                    <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800 space-y-1">
+                        <span class="font-bold text-navy dark:text-techblue-light block">Q2: การนำ Personal SWOT มาประยุกต์ใช้ในการพัฒนาตนเองของคุณธนกรมีทิศทางอย่างไร?</span>
+                        <p>ตอบ: จากข้อวิเคราะห์จุดอ่อนส่วนตัวที่ระบุว่า "ใช้ AI ทำงานมากเกินจนขาดการเรียนรู้ความรู้พื้นฐาน" ทำให้คุณธนกรตั้งเป้าหมายพัฒนาตนเองด้วยการลงมือศึกษาตรรกะโปรแกรม PLC, SCADA และระบบ Automation ด้วยตนเองอย่างถ่องแท้ เพื่อเลี่ยงการพึ่งพา AI เพียงอย่างเดียว และก้าวสู่การเป็นวิศวกรการขายและระบบอัตโนมัติผู้เชี่ยวชาญอย่างแท้จริง</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- JAVASCRIPT CORE LOGIC -->
+    <script>
+        // Global State
+        let currentView = 'dashboard'; // 'dashboard' or 'brief'
+        let currentPeriod = 'FY';      // 'FY', 'Q1', 'Q2', 'Q3', 'Q4'
+        let currentSegment = 'ALL';    // 'ALL', 'AUTO', 'FOOD', 'ELEC', 'LOGI', 'PAPER'
+        let currentDataTab = 'projects';
+
+        // Master Filtered Data Dictionary
+        const masterData = {
+            FY: {
+                ALL: { rev: "฿18.45M", revVal: 18.45, revStatus: "+23.0% เหนือเป้า", revColor: "emerald", uptime: "99.68%", margin: "22.4%", cac: "฿38,200", iot: "88.2%", alert: null },
+                AUTO: { rev: "฿6.28M", revVal: 6.28, revStatus: "+28.5%", revColor: "emerald", uptime: "99.85%", margin: "24.5%", cac: "฿34,500", iot: "92.0%", alert: null },
+                FOOD: { rev: "฿4.80M", revVal: 4.80, revStatus: "+20.0%", revColor: "emerald", uptime: "99.70%", margin: "22.0%", cac: "฿36,000", iot: "88.5%", alert: null },
+                ELEC: { rev: "฿3.90M", revVal: 3.90, revStatus: "+15.0%", revColor: "emerald", uptime: "99.60%", margin: "21.5%", cac: "฿39,000", iot: "86.0%", alert: null },
+                LOGI: { rev: "฿2.10M", revVal: 2.10, revStatus: "+10.0%", revColor: "emerald", uptime: "99.55%", margin: "20.2%", cac: "฿42,000", iot: "84.0%", alert: null },
+                PAPER: { rev: "฿1.37M", revVal: 1.37, revStatus: "-5.0% ต่ำเป้า", revColor: "amber", uptime: "99.12%", margin: "18.5%", cac: "฿48,500", iot: "78.0%", alert: "กลุ่มโรงงานกระดาษมี Uptime ต่ำกว่า 99.5% และ Margin ต่ำกว่า 20% เนื่องจากสภาพแวดล้อมมีความชื้นสูงส่งผลต่อเซนเซอร์ PLC" }
+            },
+            Q1: {
+                ALL: { rev: "฿4.20M", revVal: 4.20, revStatus: "ตามเป้า Q1", revColor: "emerald", uptime: "99.72%", margin: "21.8%", cac: "฿37,500", iot: "86.5%", alert: null },
+                AUTO: { rev: "฿1.50M", revVal: 1.50, revStatus: "+15.0%", revColor: "emerald", uptime: "99.88%", margin: "23.5%", cac: "฿33,000", iot: "90.0%", alert: null },
+                FOOD: { rev: "฿1.10M", revVal: 1.10, revStatus: "+10.0%", revColor: "emerald", uptime: "99.75%", margin: "21.5%", cac: "฿35,500", iot: "87.0%", alert: null },
+                ELEC: { rev: "฿0.90M", revVal: 0.90, revStatus: "+8.0%", revColor: "emerald", uptime: "99.62%", margin: "21.0%", cac: "฿38,000", iot: "85.0%", alert: null },
+                LOGI: { rev: "฿0.45M", revVal: 0.45, revStatus: "ปกติ", revColor: "emerald", uptime: "99.58%", margin: "20.0%", cac: "฿41,000", iot: "82.0%", alert: null },
+                PAPER: { rev: "฿0.25M", revVal: 0.25, revStatus: "-8.0%", revColor: "amber", uptime: "99.20%", margin: "18.0%", cac: "฿49,000", iot: "75.0%", alert: "Q1 โรงงานกระดาษมี CAC สูงกว่า ฿45,000 จากการต้องเข้าสาธิต Demo หลายรอบ" }
+            },
+            Q2: {
+                ALL: { rev: "฿4.65M", revVal: 4.65, revStatus: "+12.0%", revColor: "emerald", uptime: "99.65%", margin: "22.5%", cac: "฿38,000", iot: "87.8%", alert: null },
+                AUTO: { rev: "฿1.60M", revVal: 1.60, revStatus: "+20.0%", revColor: "emerald", uptime: "99.82%", margin: "24.8%", cac: "฿34,000", iot: "91.5%", alert: null },
+                FOOD: { rev: "฿1.25M", revVal: 1.25, revStatus: "+15.0%", revColor: "emerald", uptime: "99.68%", margin: "22.2%", cac: "฿36,200", iot: "88.0%", alert: null },
+                ELEC: { rev: "฿1.00M", revVal: 1.00, revStatus: "+12.0%", revColor: "emerald", uptime: "99.58%", margin: "21.8%", cac: "฿38,800", iot: "86.2%", alert: null },
+                LOGI: { rev: "฿0.50M", revVal: 0.50, revStatus: "+5.0%", revColor: "emerald", uptime: "99.52%", margin: "20.1%", cac: "฿42,500", iot: "83.5%", alert: null },
+                PAPER: { rev: "฿0.30M", revVal: 0.30, revStatus: "-4.0%", revColor: "amber", uptime: "99.18%", margin: "18.8%", cac: "฿47,800", iot: "77.5%", alert: "Q2 สัญญา SLA ในกลุ่มกระดาษต้องเข้าตรวจ Preventive เพิ่มเติม" }
+            },
+            Q3: {
+                ALL: { rev: "฿4.80M", revVal: 4.80, revStatus: "+15.0%", revColor: "emerald", uptime: "99.62%", margin: "22.8%", cac: "฿38,500", iot: "88.8%", alert: null },
+                AUTO: { rev: "฿1.58M", revVal: 1.58, revStatus: "+18.0%", revColor: "emerald", uptime: "99.80%", margin: "24.2%", cac: "฿35,000", iot: "92.5%", alert: null },
+                FOOD: { rev: "฿1.22M", revVal: 1.22, revStatus: "+14.0%", revColor: "emerald", uptime: "99.65%", margin: "22.1%", cac: "฿36,500", iot: "89.0%", alert: null },
+                ELEC: { rev: "฿1.02M", revVal: 1.02, revStatus: "+10.0%", revColor: "emerald", uptime: "99.60%", margin: "21.6%", cac: "฿39,200", iot: "86.5%", alert: null },
+                LOGI: { rev: "฿0.58M", revVal: 0.58, revStatus: "+8.0%", revColor: "emerald", uptime: "99.55%", margin: "20.3%", cac: "฿41,800", iot: "84.5%", alert: null },
+                PAPER: { rev: "฿0.40M", revVal: 0.40, revStatus: "ตามเป้าปรับปรุง", revColor: "emerald", uptime: "99.30%", margin: "19.2%", cac: "฿46,000", iot: "79.0%", alert: "Q3 ผลจากการอัปเกรดเซนเซอร์ความร้อนทำให้ Uptime กลุ่มกระดาษเริ่มฟื้นตัว" }
+            },
+            Q4: {
+                ALL: { rev: "฿4.80M", revVal: 4.80, revStatus: "+18.0%", revColor: "emerald", uptime: "99.72%", margin: "22.6%", cac: "฿38,800", iot: "89.5%", alert: null },
+                AUTO: { rev: "฿1.60M", revVal: 1.60, revStatus: "+22.0%", revColor: "emerald", uptime: "99.90%", margin: "25.0%", cac: "฿34,200", iot: "93.0%", alert: null },
+                FOOD: { rev: "฿1.23M", revVal: 1.23, revStatus: "+16.0%", revColor: "emerald", uptime: "99.72%", margin: "22.4%", cac: "฿35,800", iot: "90.0%", alert: null },
+                ELEC: { rev: "฿0.98M", revVal: 0.98, revStatus: "+11.0%", revColor: "emerald", uptime: "99.65%", margin: "21.5%", cac: "฿39,500", iot: "87.0%", alert: null },
+                LOGI: { rev: "฿0.57M", revVal: 0.57, revStatus: "+9.0%", revColor: "emerald", uptime: "99.58%", margin: "20.5%", cac: "฿41,500", iot: "85.0%", alert: null },
+                PAPER: { rev: "฿0.42M", revVal: 0.42, revStatus: "+2.0%", revColor: "emerald", uptime: "99.45%", margin: "19.5%", cac: "฿45,200", iot: "80.0%", alert: null }
+            }
+        };
+
+        // Chart instances dictionary
+        const charts = {};
+
+        // Initialize All 7 Narrative Charts
+        function initCharts() {
+            // Chart 1: Problem & Value (Downtime vs Error Rate)
+            const ctx1 = document.getElementById('chart1_downtime').getContext('2d');
+            charts.chart1 = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: ['ก่อนติดตั้ง (Manual System)', 'หลังติดตั้ง (Automation Solution)'],
+                    datasets: [
+                        {
+                            label: 'Unplanned Downtime (ชั่วโมง/ปี)',
+                            data: [142, 25],
+                            backgroundColor: '#0B2D5C',
+                            borderRadius: 6,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'อัตราความผิดพลาด Human Error (%)',
+                            data: [4.8, 0.12],
+                            backgroundColor: '#1687E8',
+                            borderRadius: 6,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } },
+                    scales: {
+                        y: { type: 'linear', position: 'left', title: { display: true, text: 'ชั่วโมง/ปี', font: { size: 10 } } },
+                        y1: { type: 'linear', position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'อัตราข้อผิดพลาด (%)', font: { size: 10 } } }
+                    }
+                }
+            });
+
+            // Chart 2: Customer Leads & Active SLA Contracts
+            const ctx2 = document.getElementById('chart2_leads').getContext('2d');
+            charts.chart2 = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                    datasets: [
+                        {
+                            type: 'bar',
+                            label: 'New B2B Leads',
+                            data: [38, 45, 52, 48],
+                            backgroundColor: '#A7B0BA',
+                            borderRadius: 6
+                        },
+                        {
+                            type: 'line',
+                            label: 'Active SLA Contracts (สะสม)',
+                            data: [28, 36, 44, 52],
+                            borderColor: '#1687E8',
+                            backgroundColor: '#1687E8',
+                            borderWidth: 3,
+                            fill: false,
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } }
+                }
+            });
+
+            // Chart 3: Marketing Channels & CAC
+            const ctx3 = document.getElementById('chart3_channels').getContext('2d');
+            charts.chart3 = new Chart(ctx3, {
+                type: 'bar',
+                data: {
+                    labels: ['Direct B2B Sales', 'Seminar Smart Factory', 'Partner Referral', 'Online B2B Portal'],
+                    datasets: [
+                        {
+                            label: 'ต้นทุนจัดหาลูกค้า CAC (บาท)',
+                            data: [32000, 36500, 28000, 52000],
+                            backgroundColor: ['#0B2D5C', '#1687E8', '#10B981', '#F59E0B'],
+                            borderRadius: 6
+                        }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => ` CAC: ฿${ctx.raw.toLocaleString()}`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(0,0,0,0.05)' },
+                            title: { display: true, text: 'บาท / ลูกค้า 1 ราย (เพดานเป้าหมาย ≤ ฿45,000)', font: { size: 10 } }
+                        }
+                    }
+                }
+            });
+
+            // Chart 4: Segment & Geographic Breakdown
+            const ctx4 = document.getElementById('chart4_segments').getContext('2d');
+            charts.chart4 = new Chart(ctx4, {
+                type: 'bar',
+                data: {
+                    labels: ['ชิ้นส่วนยานยนต์ (AUTO)', 'อาหารและเครื่องดื่ม (FOOD)', 'อิเล็กทรอนิกส์ (ELEC)', 'โลจิสติกส์ (LOGI)', 'โรงงานกระดาษ (PAPER)'],
+                    datasets: [
+                        {
+                            label: 'สัดส่วนรายได้ (%)',
+                            data: [34, 26, 21, 12, 7],
+                            backgroundColor: '#0B2D5C',
+                            borderRadius: 6
+                        }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            // Chart 5: Revenue Streams vs Target
+            const ctx5 = document.getElementById('chart5_revenue').getContext('2d');
+            charts.chart5 = new Chart(ctx5, {
+                type: 'bar',
+                data: {
+                    labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                    datasets: [
+                        {
+                            label: 'Project Installation',
+                            data: [2.4, 2.7, 2.8, 2.8],
+                            backgroundColor: '#0B2D5C'
+                        },
+                        {
+                            label: 'Maintenance SLA',
+                            data: [1.2, 1.35, 1.4, 1.4],
+                            backgroundColor: '#1687E8'
+                        },
+                        {
+                            label: 'IoT & Software Upgrade',
+                            data: [0.6, 0.6, 0.6, 0.6],
+                            backgroundColor: '#10B981'
+                        },
+                        {
+                            type: 'line',
+                            label: 'Target Benchmark (฿4.0M/Q)',
+                            data: [4.0, 4.0, 4.0, 4.0],
+                            borderColor: '#EF4444',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } },
+                    scales: {
+                        x: { stacked: true },
+                        y: { stacked: true, title: { display: true, text: 'ล้านบาท (THB)', font: { size: 10 } } }
+                    }
+                }
+            });
+
+            // Chart 6: Machine Uptime & SCADA Latency
+            const ctx6 = document.getElementById('chart6_quality').getContext('2d');
+            charts.chart6 = new Chart(ctx6, {
+                type: 'line',
+                data: {
+                    labels: ['Q1-M1', 'Q1-M2', 'Q1-M3', 'Q2-M1', 'Q2-M2', 'Q2-M3', 'Q3-M1', 'Q3-M2', 'Q3-M3', 'Q4-M1', 'Q4-M2', 'Q4-M3'],
+                    datasets: [
+                        {
+                            label: 'Machine Uptime Rate (%)',
+                            data: [99.7, 99.8, 99.65, 99.72, 99.68, 99.60, 99.58, 99.65, 99.63, 99.70, 99.75, 99.80],
+                            borderColor: '#10B981',
+                            borderWidth: 2.5,
+                            yAxisID: 'y',
+                            tension: 0.2
+                        },
+                        {
+                            label: 'SCADA Latency Response (ms)',
+                            data: [18, 16, 22, 19, 17, 21, 24, 20, 18, 15, 14, 13],
+                            borderColor: '#F59E0B',
+                            borderWidth: 2,
+                            borderDash: [3, 3],
+                            yAxisID: 'y1',
+                            tension: 0.2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } },
+                    scales: {
+                        y: { min: 98.5, max: 100, title: { display: true, text: 'Uptime (%)', font: { size: 10 } } },
+                        y1: { position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Latency (ms)', font: { size: 10 } } }
+                    }
+                }
+            });
+
+            // Chart 7: Financial Revenue vs Cost & Cumulative Cashflow
+            const ctx7 = document.getElementById('chart7_financial').getContext('2d');
+            charts.chart7 = new Chart(ctx7, {
+                type: 'bar',
+                data: {
+                    labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                    datasets: [
+                        {
+                            type: 'bar',
+                            label: 'Total Revenue (รายได้)',
+                            data: [4.20, 4.65, 4.80, 4.80],
+                            backgroundColor: '#0B2D5C',
+                            borderRadius: 6
+                        },
+                        {
+                            type: 'bar',
+                            label: 'Total Costs (ต้นทุนรวม 4M)',
+                            data: [3.28, 3.60, 3.70, 3.71],
+                            backgroundColor: '#A7B0BA',
+                            borderRadius: 6
+                        },
+                        {
+                            type: 'line',
+                            label: 'Cumulative Profit (กำไรสะสม)',
+                            data: [0.92, 1.97, 3.07, 4.16],
+                            borderColor: '#10B981',
+                            backgroundColor: '#10B981',
+                            borderWidth: 3,
+                            fill: false,
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } },
+                    scales: {
+                        y: { title: { display: true, text: 'ล้านบาท (THB)', font: { size: 10 } } }
+                    }
+                }
+            });
+        }
+
+        // Set Period Filter Chip
+        function setPeriodFilter(period) {
+            currentPeriod = period;
+            document.querySelectorAll('[id^="chip-period-"]').forEach(btn => {
+                btn.className = "filter-chip px-3 py-1 rounded-lg border font-medium transition-all border-navy-light/60 text-silver hover:text-white hover:bg-navy-light/50";
+            });
+            const activeBtn = document.getElementById(`chip-period-${period}`);
+            if(activeBtn) {
+                activeBtn.className = "filter-chip px-3 py-1 rounded-lg border font-medium transition-all bg-techblue border-techblue text-white shadow-sm";
+            }
+            updateDashboardData();
+        }
+
+        // Set Segment Filter Chip
+        function setSegmentFilter(seg) {
+            currentSegment = seg;
+            document.querySelectorAll('[id^="chip-seg-"]').forEach(btn => {
+                btn.className = "filter-chip px-2.5 py-1 rounded-lg border font-medium transition-all border-navy-light/60 text-silver hover:text-white hover:bg-navy-light/50";
+            });
+            const activeBtn = document.getElementById(`chip-seg-${seg}`);
+            if(activeBtn) {
+                activeBtn.className = "filter-chip px-2.5 py-1 rounded-lg border font-medium transition-all bg-techblue border-techblue text-white shadow-sm";
+            }
+            updateDashboardData();
+        }
+
+        // Update Dynamic KPIs and Alert Panel based on active filters
+        function updateDashboardData() {
+            const data = masterData[currentPeriod]?.[currentSegment] || masterData.FY.ALL;
+            
+            // Update KPI Text
+            document.getElementById('kpi-revenue').innerText = data.rev;
+            document.getElementById('kpi-uptime').innerText = data.uptime;
+            document.getElementById('kpi-margin').innerText = data.margin;
+            document.getElementById('kpi-cac').innerText = data.cac;
+            document.getElementById('kpi-iot').innerText = data.iot;
+
+            // Update Active Filter Badge
+            const segNames = { ALL: 'ทุกกลุ่มอุตสาหกรรม', AUTO: 'ชิ้นส่วนยานยนต์', FOOD: 'อาหาร/เครื่องดื่ม', ELEC: 'อิเล็กทรอนิกส์', LOGI: 'โลจิสติกส์', PAPER: 'โรงงานกระดาษ' };
+            document.getElementById('activeFilterBadge').innerText = `${currentPeriod} | ${segNames[currentSegment]}`;
+
+            // Update Alert Panel
+            const alertPanel = document.getElementById('alertPanel');
+            const alertText = document.getElementById('alertMessageText');
+            
+            if (data.alert) {
+                alertPanel.classList.remove('hidden');
+                alertText.innerText = data.alert;
+            } else {
+                if (currentSegment === 'PAPER') {
+                    alertPanel.classList.remove('hidden');
+                    alertText.innerText = "กลุ่มโรงงานกระดาษมีสภาวะความชื้นสูง ส่งผลให้ระบบเซนเซอร์เสื่อมสภาพเร็วกว่าปกติ แนะนำแพ็กเกจ Preventive Maintenance เพิ่มเติม";
+                } else {
+                    alertPanel.classList.remove('hidden');
+                    alertText.innerText = "ระบบทำงานปกติ คุณภาพสายการผลิตและเวลาเดินเครื่อง Uptime SLA บรรลุตามเป้าหมาย 99.5%";
+                }
+            }
+
+            // Scale Chart datasets dynamically to simulate filter updates
+            if (charts.chart5) {
+                const mult = currentSegment === 'ALL' ? 1.0 : (currentSegment === 'AUTO' ? 0.34 : 0.22);
+                charts.chart5.data.datasets[0].data = [2.4 * mult, 2.7 * mult, 2.8 * mult, 2.8 * mult];
+                charts.chart5.data.datasets[1].data = [1.2 * mult, 1.35 * mult, 1.4 * mult, 1.4 * mult];
+                charts.chart5.update();
+            }
+
+            // Refresh Data Room Table if active
+            renderDataRoomTable();
+        }
+
+        function dismissAlert() {
+            document.getElementById('alertPanel').classList.add('hidden');
+        }
+
+        // Switch between Executive Dashboard and Design Brief View
+        function switchView(viewName) {
+            currentView = viewName;
+            const dashView = document.getElementById('dashboardView');
+            const briefView = document.getElementById('briefView');
+            const dashBtn = document.getElementById('viewBtnDashboard');
+            const briefBtn = document.getElementById('viewBtnBrief');
+
+            if (viewName === 'dashboard') {
+                dashView.classList.remove('hidden');
+                briefView.classList.add('hidden');
+                dashBtn.className = "flex-1 md:flex-none px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 bg-techblue text-white shadow-sm flex items-center justify-center gap-2";
+                briefBtn.className = "flex-1 md:flex-none px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 text-silver hover:text-white flex items-center justify-center gap-2";
+            } else {
+                dashView.classList.add('hidden');
+                briefView.classList.remove('hidden');
+                briefBtn.className = "flex-1 md:flex-none px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 bg-techblue text-white shadow-sm flex items-center justify-center gap-2";
+                dashBtn.className = "flex-1 md:flex-none px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 text-silver hover:text-white flex items-center justify-center gap-2";
+            }
+        }
+
+        // Toggle Dark / Light Theme
+        function toggleTheme() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                html.classList.add('light');
+            } else {
+                html.classList.remove('light');
+                html.classList.add('dark');
+            }
+        }
+
+        // Switch Data Room Tabs
+        function switchDataTab(tabKey) {
+            currentDataTab = tabKey;
+            const tabs = ['projects', 'sla_contracts', 'b2b_leads', 'cost_4m', 'swot_analysis'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`dataTab-${t}`);
+                if (btn) {
+                    if (t === tabKey) {
+                        btn.className = "px-3 py-1.5 rounded-lg bg-navy text-white shadow-sm font-semibold transition-all";
+                    } else {
+                        btn.className = "px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all";
+                    }
+                }
+            });
+            renderDataRoomTable();
+        }
+
+        // Render Data Room Table Content
+        function renderDataRoomTable() {
+            const thead = document.getElementById('dataRoomThead');
+            const tbody = document.getElementById('dataRoomTbody');
+            if (!thead || !tbody) return;
+
+            let headHTML = '';
+            let bodyHTML = '';
+
+            if (currentDataTab === 'projects') {
+                headHTML = `
+                    <tr>
+                        <th class="p-2.5 border-b border-slate-200 dark:border-slate-700">รหัสโครงการ</th>
+                        <th class="p-2.5 border-b border-slate-200 dark:border-slate-700">ชื่อลูกค้า / โรงงาน</th>
+                        <th class="p-2.5 border-b border-slate-200 dark:border-slate-700">กลุ่มอุตสาหกรรม</th>
+                        <th class="p-2.5 border-b border-slate-200 dark:border-slate-700">พื้นที่นิคม</th>
+                        <th class="p-2.5 border-b border-slate-200 dark:border-slate-700">มูลค่าสัญญา (บาท)</th>
+                        <th class="p-2.5 border-b border-slate-200 dark:border-slate-700">การันตี SLA</th>
+                        <th class="p-2.5 border-b border-slate-200 dark:border-slate-700">สถานะ</th>
+                    </tr>
+                `;
+                bodyHTML = `
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                        <td class="p-2.5 font-mono font-semibold">PRJ-2026-001</td>
+                        <td class="p-2.5 font-medium">AutoParts Global Co., Ltd.</td>
+                        <td class="p-2.5"><span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300">AUTO</span></td>
+                        <td class="p-2.5">EEC (อมตะซิตี้ ระยอง)</td>
+                        <td class="p-2.5 font-mono">฿3,500,000</td>
+                        <td class="p-2.5 font-mono text-emerald-600 dark:text-emerald-400 font-semibold">99.8%</td>
+                        <td class="p-2.5"><span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300 font-semibold">ส่งมอบแล้ว</span></td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                        <td class="p-2.5 font-mono font-semibold">PRJ-2026-002</td>
+                        <td class="p-2.5 font-medium">Siam Food Bev Public Co.</td>
+                        <td class="p-2.5"><span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">FOOD</span></td>
+                        <td class="p-2.5">อยุธยา (โรจนะ)</td>
+                        <td class="p-2.5 font-mono">฿2,800,000</td>
+                        <td class="p-2.5 font-mono text-emerald-600 dark:text-emerald-400 font-semibold">99.5%</td>
+                        <td class="p-2.5"><span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300 font-semibold">ส่งมอบแล้ว</span></td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                        <td class="p-2.5 font-mono font-semibold">PRJ-2026-003</td>
+                        <td class="p-2.5 font-medium">MicroTech Electronics Ltd.</td>
+                        <td class="p-2.5"><span class="px-2 py-0.5 rounded bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300">ELEC</span></td>
+                        <td class="p-2.5">ปทุมธานี (นวนคร)</td>
+                        <td class="p-2.5 font-mono">฿2,200,000</td>
+                        <td class="p-2.5 font-mono text-emerald-600 dark:text-emerald-400 font-semibold">99.6%</td>
+                        <td class="p-2.5"><span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300 font-semibold">กำลังติดตั้ง</span></td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                        <td class="p-2.5 font-mono font-semibold">PRJ-2026-004</td>
+                        <td class="p-2.5 font-medium">Smart Packaging & Paper Corp.</td>
+                        <td class="p-2.5"><span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">PAPER</span></td>
+                        <td class="p-2.5">EEC (แหลมฉบัง)</td>
+                        <td class="p-2.5 font-mono">฿1,370,000</td>
+                        <td class="p-2.5 font-mono text-amber-600 dark:text-amber-400 font-semibold">99.1%</td>
+                        <td class="p-2.5"><span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 font-semibold">ปรับปรุงเซนเซอร์</span></td>
+                    </tr>
+                `;
+            } else if (currentDataTab === 'sla_contracts') {
+                headHTML = `
+                    <tr>
+                        <th class="p-2.5 border-b border-slate-200 dark:border-slate-700">รหัสสัญญา SLA</th>
+                        <th class="p-2.5 border-b border-slate-200 dark:border-slate-700">ชื่อลูกค้า</th>
+                        <th class="p-2.5 border-b border-slate-200 dark:border-slate-700">ระดับแพ็กเกจ</th>
+                        <th class="p-2.5 border-b border-slate-200 dark:border-slate-700">ค่าบริการ/เดือน</th>
+                        <th class="p-2.5 border-b border-slate-200 dark:border-slate-700">เป้า Uptime SLA</th>
+                        <th class="p-2.5 border-b border-slate-200 dark:border-slate-700">สถานะสัญญา</th>
+                    </tr>
+                `;
+                bodyHTML = `
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                        <td class="p-2.5 font-mono font-semibold">SLA-2026-101</td>
+                        <td class="p-2.5 font-medium">AutoParts Global Co., Ltd.</td>
+                        <td class="p-2.5 font-semibold text-techblue">Predictive SLA Pro (24/7)</td>
+                        <td class="p-2.5 font-mono">฿180,000</td>
+                        <td class="p-2.5 font-mono font-bold text-emerald-600">≥ 99.8%</td>
+                        <td class="p-2.5"><span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300 font-semibold">Active</span></td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                        <td class="p-2.5 font-mono font-semibold">SLA-2026-102</td>
+                        <td class="p-2.5 font-medium">Siam Food Bev Public Co.</td>
+                        <td class="p-2.5 font-semibold text-techblue">Standard Preventative SLA</td>
+                        <td class="p-2.5 font-mono">฿120,000</td>
+                        <td class="p-2.5 font-mono font-bold text-emerald-600">≥ 99.5%</td>
+                        <td class="p-2.5"><span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300 font-semibold">Active</span></td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                        <td class="p-2.5 font-mono font-semibold">SLA-2026-103</td>
+                        <td class="p-2.5 font-medium">Smart Packaging & Paper Corp.</td>
+                        <td class="p-2.5 font-semibold text-amber-600">Basic SLA + Edge Sensor Support</td>
+                        <td class="p-2.5 font-mono">฿95,000</td>
+                        <td class="p-2.5 font-mono font-bold text-amber-600">≥ 99.2%</td>
+                        <td class="p-2.5"><span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 font-semibold">Under Review</span></td>
+                    </tr>
+                `;
+            } else if (currentDataTab === 'b2b_leads') {
+                headHTML = `
+                    <tr>
+                        <th class="p-2.5 border-b border-slate-200 dark:border-slate-700">รหัส Lead</th>
+                        <th class="p-2.5 border-b border-slate-200 dark:border-slate-700">บริษัทลูกค้า</th>
+                        <th class="p-2.5 border-b border-slate-200 dark:border-slate-700">ช่องทาง acquisition</th>
+                        <th class="p-2.5 border-b border-slate-200 dark:border-slate-700">ประมาณการงบประมาณ</th>
+                        <th class="p-2.5 border-b border-slate-200 dark:border-slate-700">โอกาสปิดการขาย</th>
+                        <th class="p-2.5 border-b border-slate-200 dark:border-slate-700">ขั้นตอน (Stage)</th>
+                    </tr>
+                `;
+                bodyHTML = `
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                        <td class="p-2.5 font-mono font-semibold">LEAD-8801</td>
+                        <td class="p-2.5 font-medium">Eastern EV Component Co.</td>
+                        <td class="p-2.5">Direct B2B Sales</td>
+                        <td class="p-2.5 font-mono">฿5,500,000</td>
+                        <td class="p-2.5 font-semibold text-emerald-600">85%</td>
+                        <td class="p-2.5"><span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300 font-semibold">Proposal Sent</span></td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                        <td class="p-2.5 font-mono font-semibold">LEAD-8802</td>
+                        <td class="p-2.5 font-medium">Thai Beverage Logistics Hub</td>
+                        <td class="p-2.5">Seminar Smart Factory</td>
+                        <td class="p-2.5 font-mono">฿3,200,000</td>
+                        <td class="p-2.5 font-semibold text-emerald-600">70%</td>
+                        <td class="p-2.5"><span class="px-2 py-0.5 rounded bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-300 font-semibold">Technical Demo</span></td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                        <td class="p-2.5 font-mono font-semibold">LEAD-8803</td>
+                        <td class="p-2.5 font-medium">Chonburi Solar Panel Fab</td>
+                        <td class="p-2.5">Partner Referral</td>
+                        <td class="p-2.5 font-mono">฿4,100,000</td>
+                        <td class="p-2.5 font-semibold text-emerald-600">90%</td>
+                        <td class="p-2.5"><span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300 font-semibold">Contract Negotiation</span></td>
+                    </tr>
+                `;
+            } else if (currentDataTab === 'cost_4m') {
+                headHTML = `
+                    <tr>
+                        <th class="p-2.5 border-b border-slate-200 dark:border-slate-700">หมวดหมู่ 4M</th>
+                        <th class="p-2.5 border-b border-slate-200 dark:border-slate-700">รายละเอียดองค์ประกอบ</th>
+                        <th class="p-2.5 border-b border-slate-200 dark:border-slate-700">สัดส่วนต้นทุน (%)</th>
+                        <th class="p-2.5 border-b border-slate-200 dark:border-slate-700">งบประมาณสะสม (บาท)</th>
+                        <th class="p-2.5 border-b border-slate-200 dark:border-slate-700">แนวทางการเพิ่มประสิทธิภาพ (Optimization)</th>
+                    </tr>
+                `;
+                bodyHTML = `
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                        <td class="p-2.5 font-bold text-navy dark:text-techblue-light">Material</td>
+                        <td class="p-2.5">อุปกรณ์หุ่นยนต์, แผงควบคุม PLC, เซนเซอร์ IoT เกรดอุตสาหกรรม</td>
+                        <td class="p-2.5 font-mono font-semibold">42.0%</td>
+                        <td class="p-2.5 font-mono">฿6,000,000</td>
+                        <td class="p-2.5 text-xs">ทำข้อตกลง Volume Discount ประจำปีกับผู้ผลิตอุปกรณ์ PLC ชั้นนำ</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                        <td class="p-2.5 font-bold text-navy dark:text-techblue-light">Man</td>
+                        <td class="p-2.5">เงินเดือนและค่าเบี้ยเลี้ยงทีมวิศวกรออกแบบ โปรแกรมเมอร์ และวิศวกรบริการ Field SLA</td>
+                        <td class="p-2.5 font-mono font-semibold">33.0%</td>
+                        <td class="p-2.5 font-mono">฿4,710,000</td>
+                        <td class="p-2.5 text-xs">ฝึกอบรม Up-skill ให้ทีมวิศวกรดูแลได้ทั้ง PLC Hardware และ AI Software</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                        <td class="p-2.5 font-bold text-navy dark:text-techblue-light">Machine / Facility</td>
+                        <td class="p-2.5">เครื่องมือทดสอบ, ซอฟต์แวร์จำลอง Digital Twin, และค่าบำรุงรักษาสุดยอดคลังอะไหล่</td>
+                        <td class="p-2.5 font-mono font-semibold">15.0%</td>
+                        <td class="p-2.5 font-mono">฿2,140,000</td>
+                        <td class="p-2.5 text-xs">ใช้ Cloud-based Simulation ลดค่าใช้จ่าย Hardware Server ภายใน</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                        <td class="p-2.5 font-bold text-navy dark:text-techblue-light">Method</td>
+                        <td class="p-2.5">กระบวนการจัดหาลูกค้า B2B, งานสัมมนา Smart Factory และการทดสอบ QC ระบบก่อนส่งมอบ</td>
+                        <td class="p-2.5 font-mono font-semibold">10.0%</td>
+                        <td class="p-2.5 font-mono">฿1,440,000</td>
+                        <td class="p-2.5 text-xs">เน้นการทำสัมมนาเชิงลึกแบบกลุ่มปิดเฉพาะพื้นที่นิคม EEC เพื่อเพิ่มอัตราปิดขาย</td>
+                    </tr>
+                `;
+            } else if (currentDataTab === 'swot_analysis') {
+                headHTML = `
+                    <tr>
+                        <th class="p-2.5 border-b border-slate-200 dark:border-slate-700">มิติ SWOT</th>
+                        <th class="p-2.5 border-b border-slate-200 dark:border-slate-700">ปัจจัยด้านอุตสาหกรรม (Industry Business Context)</th>
+                        <th class="p-2.5 border-b border-slate-200 dark:border-slate-700">ปัจจัยส่วนบุคคล (Personal Development Context - นายธนกร แก้วศรสีด)</th>
+                    </tr>
+                `;
+                bodyHTML = `
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                        <td class="p-2.5 font-bold text-emerald-600">Strengths (จุดแข็ง)</td>
+                        <td class="p-2.5">มีโซลูชันครบวงจรทั้ง Automation Hardware และ AI IoT Predictive Maintenance ควบคู่สัญญา SLA 24 ชั่วโมง</td>
+                        <td class="p-2.5">มีความสนใจและเข้าใจภาพรวมระบบอัตโนมัติและโครงสร้าง Business Model Canvas เป็นอย่างดี</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                        <td class="p-2.5 font-bold text-amber-600">Weaknesses (จุดอ่อน)</td>
+                        <td class="p-2.5">ต้นทุนอุปกรณ์ PLC และเซนเซอร์นำเข้ามีการผันผวนตามอัตราแลกเปลี่ยน</td>
+                        <td class="p-2.5 text-amber-700 dark:text-amber-400 font-medium">พึ่งพาการใช้ AI ในการทำงานมากเกินไป จนอาจขาดการลงมือฝึกฝนความรู้พื้นฐานด้วยตนเองอย่างลึกซึ้ง</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                        <td class="p-2.5 font-bold text-blue-600">Opportunities (โอกาส)</td>
+                        <td class="p-2.5">นโยบาย Thailand 4.0 และการขยายตัวของโรงงานผลิตรถยนต์ EV ในเขต EEC ที่ต้องการ Automation สูง</td>
+                        <td class="p-2.5">มุ่งมั่นลงมือศึกษาโค้ด PLC, SCADA และการออกแบบแดชบอร์ดด้วยตนเอง เพื่อพัฒนาทักษะวิศวกรที่แท้จริง</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                        <td class="p-2.5 font-bold text-red-600">Threats (อุปสรรค)</td>
+                        <td class="p-2.5">การแข่งขันด้านราคาจากผู้ให้บริการระบบต่างชาติ และภาวะเศรษฐกิจอุตสาหกรรมชะลอตัว</td>
+                        <td class="p-2.5">เทคโนโลยีอัตโนมัติเปลี่ยนผ่านอย่างรวดเร็ว ต้องเร่งเรียนรู้ทักษะใหม่ๆ อย่างต่อเนื่อง</td>
+                    </tr>
+                `;
+            }
+
+            thead.innerHTML = headHTML;
+            tbody.innerHTML = bodyHTML;
+        }
+
+        // Initialize on DOM Ready
+        document.addEventListener('DOMContentLoaded', () => {
+            initCharts();
+            updateDashboardData();
+            switchDataTab('projects');
+        });
+    </script>
+</body>
+</html>
